@@ -30,7 +30,8 @@
       "module": {
         "page": {
           "pages": [
-            "page/gt/home/index.page"
+            "page/gt/home/index.page",
+            "page/gt/home/config.page"
           ]
         }
       },
