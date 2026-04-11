@@ -15,26 +15,26 @@ export const TITLE_STYLE = {
   align_h: hmUI.align.CENTER_H,
 };
 
-export const CALORIE_STYLE = {
-  x: px(0),
-  y: px(85),
-  w: DEVICE_WIDTH,
-  h: px(40),
-  color: 0xAAAAAA,
-  text_size: px(20),
-  align_h: hmUI.align.CENTER_H,
+// Estilo da Imagem do Copo de Cerveja
+export const BEER_IMG_STYLE = {
+  x: px(140),
+  y: px(100),
+  pos_x: 25,
+  w: px(200),
+  h: px(200),
+  src: 'image/beer_0.png'
 };
 
-export const TEXT_STYLE = {
-  text: "0",
+// Estilo do Texto de Calorias (abaixo do copo)
+export const CALORIE_TEXT_STYLE = {
   x: px(0),
-  y: (DEVICE_HEIGHT - px(120)) / 2,
+  y: px(310),
   w: DEVICE_WIDTH,
-  h: px(120),
-  color: 0xFFD700,
-  text_size: px(90),
+  h: px(50),
+  color: 0xffffff,
+  text_size: px(24),
   align_h: hmUI.align.CENTER_H,
-  align_v: hmUI.align.CENTER_V,
+  text: '0 kcal'
 };
 
 export const BTN_PLUS_STYLE = {

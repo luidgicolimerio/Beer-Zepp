@@ -1,7 +1,8 @@
 import * as hmUI from "@zos/ui";
 import { log as Logger } from "@zos/utils";
 import { Calorie } from "@zos/sensor";
-import { TEXT_STYLE, TITLE_STYLE, BTN_PLUS_STYLE, BTN_LESS_STYLE, CALORIE_STYLE } from "zosLoader:./index.page.[pf].layout.js";
+import { createTimer } from "@zos/timer";
+import { TEXT_STYLE, TITLE_STYLE, BTN_PLUS_STYLE, BTN_LESS_STYLE, CALORIE_STYLE, BEER_IMG_STYLE, CALORIE_TEXT_STYLE } from "zosLoader:./index.page.[pf].layout.js";
 
 const logger = Logger.getLogger("beer-app");
 
@@ -19,7 +20,9 @@ Page({
     logger.debug("Beer App iniciado");
     this.state.calorieSensor = new Calorie();
 
-    this._calorieHandler = () => this.updateCalorieDisplay();
+    this._calorieHandler = () => {
+      this.updateBeerGlass();
+    };
     this.state.calorieSensor.onChange(this._calorieHandler);
   },
 
@@ -28,14 +31,9 @@ Page({
 
     try {
       hmUI.createWidget(hmUI.widget.TEXT, TITLE_STYLE);
-      this.state.textWidget = hmUI.createWidget(hmUI.widget.TEXT, TEXT_STYLE);
 
-      this.state.calorieWidget = hmUI.createWidget(hmUI.widget.TEXT, {
-        ...CALORIE_STYLE,
-        text: `Cal: -- kcal`
-      });
-
-      this.updateCalorieDisplay();
+      this.state.beerImgWidget = hmUI.createWidget(hmUI.widget.IMG, BEER_IMG_STYLE);
+      this.state.calorieTextWidget = hmUI.createWidget(hmUI.widget.TEXT, CALORIE_TEXT_STYLE);
 
       // Botões
       hmUI.createWidget(hmUI.widget.BUTTON, {
@@ -57,8 +55,9 @@ Page({
       });
 
       // Aguarda 500ms após a montagem da tela para ler o sensor pela primeira vez
-      timer.createTimer(500, 0, () => {
+      createTimer(500, 0, () => {
         this.updateCalorieDisplay();
+        this.updateBeerGlass();
       });
     } catch (e) {
       logger.error("Erro no build: " + e);
@@ -84,11 +83,29 @@ Page({
     }
   },
 
+  updateBeerGlass() {
+    if (!this.state.beerImgWidget) return;
+
+    const currentCal = this.state.calorieSensor.getCurrent() || 0;
+    
+    // Calcula o nível (0 a 10)
+    let level = Math.floor(currentCal / this.state.calPerBeer);
+    if (level > 9) level = 9; // Trava no copo cheio
+
+    // Atualiza a imagem: 'beer_0.png', 'beer_1.png', etc.
+    this.state.beerImgWidget.setProperty(hmUI.prop.SRC, `image/beer_${level}.png`);
+    
+    // Atualiza o texto
+    if (this.state.calorieTextWidget) {
+      this.state.calorieTextWidget.setProperty(hmUI.prop.TEXT, `${currentCal} kcal (${level} copos)`);
+    }
+  },
+
   updateUI() {
     if (this.state.textWidget) {
       this.state.textWidget.setProperty(hmUI.prop.TEXT, String(this.state.beerCount));
     }
-    this.updateCalorieDisplay();
+    this.updateBeerGlass();
   },
 
   onDestroy() {
